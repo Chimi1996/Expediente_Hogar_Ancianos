@@ -16,19 +16,25 @@ class Resident extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'cedula',
-        'primer_nombre',
-        'segundo_nombre',
-        'primer_apellido',
-        'segundo_apellido',
-        'sexo',
-        'fecha_nacimiento',
-        'fecha_ingreso',
-        'estado',
+        'identity_card', //cedula
+        'first_name', //primer_nombre
+        'second_name', //segundo_nombre
+        'last_name', //primer_apellido
+        'second_last_name', //segundo_apellido
+        'sex', //sexo 'Masculino' o 'Femenino'
+        'birth_date', //fecha_nacimiento
+        'admission_date', //fecha_ingreso
+        'status', //estado 'Activo', 'Inactivo', 'Trasladado', 'Fallecido'
     ];
+        
 
     public function getAgeAttribute(): int
     {
-        return Carbon::parse($this->attributes['fecha_nacimiento'])->age;
+        return Carbon::parse($this->attributes['birth_date'])->age;
+    }
+
+    public function diagnoses()
+    {
+        return $this->hasMany(Diagnosis::class);
     }
 }

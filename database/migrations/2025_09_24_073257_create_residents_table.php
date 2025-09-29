@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('residents', function (Blueprint $table) {
             $table->id();
-            $table->string('cedula')->unique();
-            $table->string('primer_nombre');
-            $table->string('segundo_nombre')->nullable();
-            $table->string('primer_apellido');
-            $table->string('segundo_apellido')->nullable();
-            $table->enum('sexo', ['Masculino', 'Femenino']);
-            $table->date('fecha_nacimiento');
-            $table->date('fecha_ingreso');
-            $table->enum('estado', ['Activo', 'Inactivo', 'Trasladado', 'Fallecido'])->default('Activo');
+            $table->string('identity_card')->unique(); //cedula
+            $table->string('first_name'); //primer_nombre
+            $table->string('second_name')->nullable(); //segundo_nombre
+            $table->string('last_name'); //primer_apellido
+            $table->string('second_last_name')->nullable(); //segundo_apellido
+            $table->enum('sex', ['Masculino', 'Femenino']); //sexo 'Masculino' o 'Femenino'
+            $table->date('birth_date'); //fecha_nacimiento
+            $table->date('admission_date'); //fecha_ingreso
+            $table->enum('status', ['Activo', 'Inactivo', 'Trasladado', 'Fallecido'])->default('Activo'); //estado 'Activo', 'Inactivo', 'Trasladado', 'Fallecido'
             $table->timestamps();
         });
     }

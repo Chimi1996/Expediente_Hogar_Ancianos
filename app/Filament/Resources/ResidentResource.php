@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use App\Filament\Resources\ResidentResource\RelationManagers\DiagnosesRelationManager;
 
 class ResidentResource extends Resource
 {
@@ -22,37 +23,56 @@ class ResidentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $modelLabel = 'Residente';
+
+    protected static ?string $pluralModelLabel = 'Residentes';
+
+    protected static ?string $navigationLabel = 'Residentes';
+
+    protected static ?string $navigationGroup = 'Gestión Hogar';
+
+    protected static ?int $navigationSort = 10;
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('cedula')
+                Forms\Components\TextInput::make('identity_card') //cedula
+                    ->label('Cédula')
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                Forms\Components\TextInput::make('primer_nombre')
+                Forms\Components\TextInput::make('first_name') //primer_nombre
+                    ->label('Primer Nombre')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('segundo_nombre')
+                Forms\Components\TextInput::make('second_name') //segundo_nombre
+                    ->label('Segundo Nombre')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('primer_apellido')
+                Forms\Components\TextInput::make('last_name') //primer_apellido
+                    ->label('Primer Apellido')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('segundo_apellido')
+                Forms\Components\TextInput::make('second_last_name') //segundo_apellido
+                    ->label('Segundo Apellido')
                     ->maxLength(255),
-                Forms\Components\Select::make('sexo')
+                Forms\Components\Select::make('sex') //sexo
+                    ->label('Sexo')
                     ->options([
                     'Masculino' => 'Masculino',
                     'Femenino' => 'Femenino',
                     ])
                     ->required(),
-                Forms\Components\DatePicker::make('fecha_nacimiento')
+                Forms\Components\DatePicker::make('birth_date') //fecha_nacimiento
+                    ->label('Fecha de Nacimiento')
                     ->required()
                     ->native(false),
-                Forms\Components\DatePicker::make('fecha_ingreso')
+                Forms\Components\DatePicker::make('admission_date') //fecha_ingreso
+                    ->label('Fecha de Ingreso')
                     ->required()
                     ->native(false),
-                Forms\Components\Select::make('estado')
+                Forms\Components\Select::make('status') //estado
+                    ->label('Estado')
                      ->options([
                     'Activo' => 'Activo',
                     'Inactivo' => 'Inactivo',
@@ -68,29 +88,37 @@ class ResidentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('cedula')
+                Tables\Columns\TextColumn::make('identity_card')
+                    ->label('Cedula')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('primer_nombre')
+                Tables\Columns\TextColumn::make('first_name')
+                    ->label('Primer Nombre')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('segundo_nombre')
+                Tables\Columns\TextColumn::make('second_name')
+                    ->label('Segundo Nombre')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('primer_apellido')
+                Tables\Columns\TextColumn::make('last_name')
+                    ->label('Primer Apellido')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('segundo_apellido')
+                Tables\Columns\TextColumn::make('second_last_name')
+                    ->label('Segundo Apellido')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('sexo'),
-                Tables\Columns\TextColumn::make('fecha_ingreso')
+                Tables\Columns\TextColumn::make('sex')
+                    ->label('Sexo'),
+                Tables\Columns\TextColumn::make('admission_date')
+                    ->label('Fecha de Ingreso')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('age') // <-- Agrega esta columna virtual
+                Tables\Columns\TextColumn::make('age') // <-- columna virtual
                     ->label('Edad') // Etiqueta personalizada para la columna
                     ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('fecha_nacimiento', $direction === 'asc' ? 'desc' : 'asc')),
-                Tables\Columns\TextColumn::make('estado')
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Estado')
                     ->searchable(),
                 
             ])
             ->filters([
-                \Filament\Tables\Filters\SelectFilter::make('estado')
+                \Filament\Tables\Filters\SelectFilter::make('status')
                     ->options([
                         'Activo' => 'Activo',
                         'Inactivo' => 'Inactivo',
@@ -100,9 +128,9 @@ class ResidentResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['value'],
-                            fn (Builder $query, $value) => $query->where('estado', $value)
+                            fn (Builder $query, $value) => $query->where('status', $value)
                         );
-        })
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -117,7 +145,7 @@ class ResidentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            DiagnosesRelationManager::class,
         ];
     }
 
