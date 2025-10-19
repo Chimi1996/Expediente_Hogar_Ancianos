@@ -16,6 +16,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Resources\ResidentResource\RelationManagers\DiagnosesRelationManager;
+use App\Filament\Resources\ResidentResource\RelationManagers\AppointmentsRelationManager;
 
 class ResidentResource extends Resource
 {
@@ -146,6 +147,7 @@ class ResidentResource extends Resource
     {
         return [
             DiagnosesRelationManager::class,
+            AppointmentsRelationManager::class,
         ];
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\ResidentResource\RelationManagers;
+namespace App\Filament\Resources\DiagnosisResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,45 +12,47 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 
-
-class DiagnosesRelationManager extends RelationManager
+class TreatmentsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'diagnoses';
+    protected static string $relationship = 'treatments';
 
-    protected static ?string $title = 'Diagnósticos';
+    protected static ?string $title = 'Tratamientos';
 
     public function form(Form $form): Form
     {
         return $form
-        ->schema([
-            TextInput::make('description')
-                ->label('Descripción del Diagnóstico')
+            ->schema([
+                Textarea::make('description')
+                ->label('Descripción del Tratamiento')
                 ->required()
-                ->maxLength(255)
-                ->columnSpanFull(), // Ocupa todo el ancho
+                ->columnSpanFull(),
 
-            DatePicker::make('diagnosis_date')
-                ->label('Fecha del Diagnóstico')
+            DatePicker::make('start_date')
+                ->label('Fecha de Inicio')
                 ->required()
+                ->native(false),
+
+            DatePicker::make('end_date')
+                ->label('Fecha de Finalizado')
                 ->native(false),
 
             Select::make('status')
                 ->label('Estado')
                 ->options([
-                    'Activo'      => 'Activo',
-                    'Resuelto'    => 'Resuelto',
-                    'En seguimiento' => 'En seguimiento',
+                    'Prescrito' => 'Prescrito',
+                    'Activo' => 'Activo',
+                    'Completado' => 'Completado',
+                    'Cancelado' => 'Cancelado',
                 ])
                 ->required()
-                ->default('Activo'),
-            
+                ->default('Prescrito'),
+
             Textarea::make('notes')
                 ->label('Notas Adicionales')
-                ->columnSpanFull(), 
-        ]);
+                ->columnSpanFull(),
+            ]);
     }
 
     public function table(Table $table): Table
@@ -58,23 +60,19 @@ class DiagnosesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('description')
             ->columns([
-                TextColumn::make('description')
-                    ->label('Descripción'),
-                TextColumn::make('diagnosis_date')
-                    ->label('Fecha')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('status')
-                    ->label('Estado'),
+                TextColumn::make('description')->label('Tratamiento'),
+                TextColumn::make('start_date')->label('Inicio')->date()->sortable(),
+                TextColumn::make('end_date')->label('Fin')->date()->sortable(),
+                TextColumn::make('status')->label('Estado'),
             ])
             ->emptyStateHeading('No se encontraron registros')
-            ->emptyStateDescription('Cree un Diagnóstico para empezar.')
+            ->emptyStateDescription('Cree un Tratamiento para empezar.')
             ->filters([
                 //
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                ->label('Crear Diagnóstico'),
+                ->label('Crear Tratamiento'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DiagnosisResource\Pages;
-use App\Filament\Resources\DiagnosisResource\RelationManagers;
-use App\Filament\Resources\DiagnosisResource\RelationManagers\TreatmentsRelationManager;
-use App\Models\Diagnosis;
+use App\Filament\Resources\TreatmentResource\Pages;
+use App\Filament\Resources\TreatmentResource\RelationManagers;
+use App\Models\Treatment;
 use App\Models\Resident;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -17,60 +16,61 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 
-
-
-class DiagnosisResource extends Resource
+class TreatmentResource extends Resource
 {
-    protected static ?string $model = Diagnosis::class;
+    protected static ?string $model = Treatment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $modelLabel = 'Diagnóstico';
+    protected static ?string $modelLabel = 'Tratamiento';
 
-    protected static ?string $pluralModelLabel = 'Diagnósticos';
+    protected static ?string $pluralModelLabel = 'Tratamientos';
 
-    protected static ?string $navigationLabel = 'Diagnósticos';
+    protected static ?string $navigationLabel = 'Tratamientos';
 
     protected static ?string $navigationGroup = 'Gestión Hogar';
 
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 30;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Select::make('resident_id')
-                    ->label('Residente')
-                    ->relationship('resident') // Busca en la relación 'resident'
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name} ({$record->identity_card})")
-                    ->searchable(['first_name', 'last_name', 'identity_card'])
+                Select::make('diagnosis_id')
+                    ->label('Diagnóstico del Residente')
+                    ->relationship('diagnosis')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->description} ({$record->resident->first_name} {$record->resident->last_name})")
+                    ->searchable()
                     ->preload()
                     ->required(),
-
-                TextInput::make('description')
-                    ->label('Descripción del Diagnóstico')
+                
+                Textarea::make('description')
+                    ->label('Descripción del Tratamiento')
                     ->required()
-                    ->maxLength(255)
                     ->columnSpanFull(),
 
-                DatePicker::make('diagnosis_date')
-                    ->label('Fecha del Diagnóstico')
+                DatePicker::make('start_date')
+                    ->label('Fecha de Inicio')
                     ->required()
+                    ->native(false),
+
+                DatePicker::make('end_date')
+                    ->label('Fecha de Fin')
                     ->native(false),
 
                 Select::make('status')
                     ->label('Estado')
                     ->options([
+                        'Prescrito' => 'Prescrito',
                         'Activo' => 'Activo',
-                        'Resuelto' => 'Resuelto',
-                        'En seguimiento' => 'En seguimiento',
+                        'Completado' => 'Completado',
+                        'Cancelado' => 'Cancelado',
                     ])
                     ->required()
-                    ->default('Activo'),
-
+                    ->default('Prescrito'),
+                
                 Textarea::make('notes')
                     ->label('Notas Adicionales')
                     ->columnSpanFull(),
@@ -81,10 +81,10 @@ class DiagnosisResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('resident.full_name')
+                TextColumn::make('diagnosis.resident.full_name')
                     ->label('Residente')
                     ->searchable(query: function (Builder $query, string $search): Builder {
-                        return $query->orWhereHas('resident', function (Builder $query) use ($search) {
+                        return $query->orWhereHas('diagnosis.resident', function (Builder $query) use ($search) {
                             $query
                                 ->where('first_name', 'like', "%{$search}%")
                                 ->orWhere('last_name', 'like', "%{$search}%");
@@ -92,37 +92,29 @@ class DiagnosisResource extends Resource
                     })
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query
-                            ->orderBy(
-                                Resident::select('first_name')
-                                    ->whereColumn('residents.id', 'diagnoses.resident_id'),
-                                $direction
-                            )
-                            ->orderBy(
-                                Resident::select('last_name')
-                                    ->whereColumn('residents.id', 'diagnoses.resident_id'),
-                                $direction
-                            );
+                            ->select('treatments.*') 
+                            ->join('diagnoses', 'treatments.diagnosis_id', '=', 'diagnoses.id')
+                            ->join('residents', 'diagnoses.resident_id', '=', 'residents.id')
+                            ->orderBy('residents.first_name', $direction)
+                            ->orderBy('residents.last_name', $direction);
                     }),
-
-                TextColumn::make('description')
-                    ->label('Descripción')
-                    ->searchable(),
                 
-                TextColumn::make('diagnosis_date')
-                    ->label('Fecha')
-                    ->date()
+                TextColumn::make('diagnosis.description')
+                    ->label('Diagnóstico')
+                    ->searchable()
                     ->sortable(),
 
-                TextColumn::make('status')
-                    ->label('Estado')
-                    ->searchable(),
+                TextColumn::make('description')->label('Tratamiento'),
+                TextColumn::make('start_date')->label('Inicio')->date()->sortable(),
+                TextColumn::make('status')->label('Estado'),
             ])
             ->filters([
-                 \Filament\Tables\Filters\SelectFilter::make('status')
+                \Filament\Tables\Filters\SelectFilter::make('status')
                     ->options([
+                        'Prescrito' => 'Prescrito',
                         'Activo' => 'Activo',
-                        'Resuelto' => 'Resuelto',
-                        'En seguimiento' => 'En seguimiento',
+                        'Completado' => 'Completado',
+                        'Cancelado' => 'Cancelado',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
@@ -144,16 +136,16 @@ class DiagnosisResource extends Resource
     public static function getRelations(): array
     {
         return [
-            TreatmentsRelationManager::class,
+            //
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDiagnoses::route('/'),
-            'create' => Pages\CreateDiagnosis::route('/create'),
-            'edit' => Pages\EditDiagnosis::route('/{record}/edit'),
+            'index' => Pages\ListTreatments::route('/'),
+            'create' => Pages\CreateTreatment::route('/create'),
+            'edit' => Pages\EditTreatment::route('/{record}/edit'),
         ];
     }
 }

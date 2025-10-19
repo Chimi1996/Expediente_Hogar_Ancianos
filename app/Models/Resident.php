@@ -37,4 +37,21 @@ class Resident extends Model
     {
         return $this->hasMany(Diagnosis::class);
     }
+
+    public function treatments()
+    {
+        return $this->hasManyThrough(Treatment::class, Diagnosis::class);
+    }
+
+    // En Resident.php
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+    
 }

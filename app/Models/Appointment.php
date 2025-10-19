@@ -5,24 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Diagnosis extends Model
+class Appointment extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'resident_id',
-        'description',
-        'diagnosis_date',
+        'doctor_name',
+        'specialty',
+        'appointment_datetime',
+        'location',
         'status',
         'notes',
     ];
 
+    protected $casts = [
+        'appointment_datetime' => 'datetime',
+    ];
     public function resident()
     {
         return $this->belongsTo(Resident::class);
-    }
-
-    public function treatments()
-    {
-        return $this->hasMany(Treatment::class);
     }
 }
