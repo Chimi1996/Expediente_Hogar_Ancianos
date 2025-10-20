@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\TreatmentResource\Pages;
+namespace App\Filament\Resources\MedicationResource\Pages;
 
-use App\Filament\Resources\TreatmentResource;
+use App\Filament\Resources\MedicationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateTreatment extends CreateRecord
+class CreateMedication extends CreateRecord
 {
-    protected static string $resource = TreatmentResource::class;
+    protected static string $resource = MedicationResource::class;
 
     protected function getFormActions(): array
     {
