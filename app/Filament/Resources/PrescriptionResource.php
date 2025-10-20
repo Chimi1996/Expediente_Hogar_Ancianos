@@ -2,15 +2,15 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AppointmentResource\Pages;
-use App\Filament\Resources\AppointmentResource\RelationManagers;
-use App\Models\Appointment;
+use App\Filament\Resources\PrescriptionResource\Pages;
+use App\Filament\Resources\PrescriptionResource\RelationManagers;
+use App\Models\Prescription;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -19,22 +19,23 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Models\Resident;
 
-class AppointmentResource extends Resource
+class PrescriptionResource extends Resource
 {
-    protected static ?string $model = Appointment::class;
-    protected static ?string $modelLabel = 'Cita Médica';
-    protected static ?string $pluralModelLabel = 'Citas Médicas';
-    protected static ?string $navigationLabel = 'Citas Médicas';
-    protected static ?string $navigationGroup = 'Gestión Clínica';
-    protected static ?int $navigationSort = 40;
+    protected static ?string $model = Prescription::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+
+    protected static ?string $modelLabel = 'Prescripción';
+    protected static ?string $pluralModelLabel = 'Prescripciones';
+    protected static ?string $navigationLabel = 'Asignar Medicamentos';
+    protected static ?string $navigationGroup = 'Gestión Clínica';
+    protected static ?int $navigationSort = 60;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                // Selector de Residente
+                // Selector de Residente 
                 Select::make('resident_id')
                     ->label('Residente')
                     ->relationship('resident')
@@ -43,38 +44,45 @@ class AppointmentResource extends Resource
                     ->preload()
                     ->required(),
 
-                DateTimePicker::make('appointment_datetime')
-                    ->label('Fecha y Hora de la Cita')
-                    ->required()
-                    ->native(false), 
+                // Selector de Medicamento (del Catálogo) 
+                Select::make('medication_id')
+                    ->label('Medicamento')
+                    ->relationship('medication', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
 
-                TextInput::make('doctor_name')
-                    ->label('Nombre del Médico')
+                TextInput::make('dose')
+                    ->label('Dosis (Ej: 1 tableta, 5ml)')
+                    ->required()
+                    ->maxLength(255),
+
+                TextInput::make('frequency')
+                    ->label('Frecuencia (Ej: Cada 8h, Con desayuno)')
                     ->required()
                     ->maxLength(255),
 
-                TextInput::make('specialty')
-                    ->label('Especialidad (Opcional)')
-                    ->maxLength(255),
-
-                TextInput::make('location')
-                    ->label('Lugar')
+                DatePicker::make('start_date')
+                    ->label('Fecha de Inicio')
                     ->required()
-                    ->maxLength(255),
+                    ->native(false),
+
+                DatePicker::make('end_date')
+                    ->label('Fecha de Fin (Opcional)')
+                    ->native(false),
 
                 Select::make('status')
                     ->label('Estado')
                     ->options([
-                        'Pendiente' => 'Pendiente',
+                        'Activa' => 'Activa',
                         'Completada' => 'Completada',
-                        'Cancelada' => 'Cancelada',
-                        'Reprogramada' => 'Reprogramada',
+                        'Suspendida' => 'Suspendida',
                     ])
                     ->required()
-                    ->default('Pendiente'), 
+                    ->default('Activa'),
 
                 Textarea::make('notes')
-                    ->label('Notas (Motivo, Preparación, etc.)')
+                    ->label('Indicaciones Especiales')
                     ->columnSpanFull(),
             ]);
     }
@@ -82,8 +90,8 @@ class AppointmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('appointment_datetime')
             ->columns([
+                 // --- Columna de Residente (con búsqueda y ordenamiento) ---
                 TextColumn::make('resident.full_name') // Usa el accesor
                     ->label('Residente')
                     ->searchable(query: function (Builder $query, string $search): Builder { // Búsqueda personalizada
@@ -96,36 +104,36 @@ class AppointmentResource extends Resource
                     ->sortable(query: function (Builder $query, string $direction): Builder { // Ordenamiento personalizado
                         return $query
                             ->orderBy(
-                                Resident::select('first_name')->whereColumn('residents.id', 'appointments.resident_id'),
+                                Resident::select('first_name')->whereColumn('residents.id', 'prescriptions.resident_id'),
                                 $direction
                             )
                             ->orderBy(
-                                Resident::select('last_name')->whereColumn('residents.id', 'appointments.resident_id'),
+                                Resident::select('last_name')->whereColumn('residents.id', 'prescriptions.resident_id'),
                                 $direction
                             );
                     }),
-                TextColumn::make('appointment_datetime')
-                    ->label('Fecha y Hora')
-                    ->dateTime('d/m/Y H:i') // Formato día/mes/año hora:minuto
+                
+                TextColumn::make('medication.name')
+                    ->label('Medicamento')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('doctor_name')
-                    ->label('Médico')
-                    ->searchable(),
-                TextColumn::make('location')
-                    ->label('Lugar'),
+
+                TextColumn::make('dose')
+                    ->label('Dosis'),
+                TextColumn::make('frequency')
+                    ->label('Frecuencia'),
+                TextColumn::make('start_date')
+                    ->label('Fecha de Inicio')
+                    ->sortable(),
                 TextColumn::make('status')
                     ->label('Estado'),
             ])
-            ->defaultSort('appointment_datetime', 'desc')
-            ->emptyStateHeading('No se encontraron registros')
-            ->emptyStateDescription('Cree una Cita para empezar.')
             ->filters([
                 \Filament\Tables\Filters\SelectFilter::make('status')
                     ->options([
-                        'Pendiente' => 'Pendiente',
+                        'Activa' => 'Activa',
                         'Completada' => 'Completada',
-                        'Cancelada' => 'Cancelada',
-                        'Reprogramada' => 'Reprogramada',
+                        'Suspendida' => 'Suspendida',
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
@@ -154,9 +162,9 @@ class AppointmentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAppointments::route('/'),
-            'create' => Pages\CreateAppointment::route('/create'),
-            'edit' => Pages\EditAppointment::route('/{record}/edit'),
+            'index' => Pages\ListPrescriptions::route('/'),
+            'create' => Pages\CreatePrescription::route('/create'),
+            'edit' => Pages\EditPrescription::route('/{record}/edit'),
         ];
     }
 }

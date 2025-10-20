@@ -25,7 +25,7 @@ class MedicationResource extends Resource
     protected static ?string $modelLabel = 'Medicamento';
     protected static ?string $pluralModelLabel = 'Medicamentos';
     protected static ?string $navigationLabel = 'Gestionar Medicamentos';
-    protected static ?string $navigationGroup = 'Medicamentos';
+    protected static ?string $navigationGroup = 'Gestión Clínica';
     protected static ?int $navigationSort = 50;
 
     public static function form(Form $form): Form

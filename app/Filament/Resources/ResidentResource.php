@@ -17,12 +17,13 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Resources\ResidentResource\RelationManagers\DiagnosesRelationManager;
 use App\Filament\Resources\ResidentResource\RelationManagers\AppointmentsRelationManager;
+use App\Filament\Resources\ResidentResource\RelationManagers\PrescriptionsRelationManager;
 
 class ResidentResource extends Resource
 {
     protected static ?string $model = Resident::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $modelLabel = 'Residente';
 
@@ -148,6 +149,7 @@ class ResidentResource extends Resource
         return [
             DiagnosesRelationManager::class,
             AppointmentsRelationManager::class,
+            PrescriptionsRelationManager::class,
         ];
     }
 

@@ -15,4 +15,9 @@ class Medication extends Model
         'standard_dose',
         'description',
     ];
+
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class);
+    }
 }
