@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('diagnosis_id')
                 ->constrained()
                 ->cascadeOnDelete();
-
             $table->text('description'); 
             $table->date('start_date'); 
             $table->date('end_date')->nullable(); // Fecha de fin (opcional)

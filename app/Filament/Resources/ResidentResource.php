@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\CreateAction;
 use App\Filament\Resources\ResidentResource\RelationManagers\DiagnosesRelationManager;
 use App\Filament\Resources\ResidentResource\RelationManagers\AppointmentsRelationManager;
 use App\Filament\Resources\ResidentResource\RelationManagers\PrescriptionsRelationManager;
@@ -135,11 +138,17 @@ class ResidentResource extends Resource
                     })
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make()
+                // Visible para cualquiera con permiso 'manage residents'
+                    ->visible(fn (): bool => auth()->user()->can('manage residents')),
+                DeleteAction::make()
+                    // Visible solo para Administradores
+                    ->visible(fn (): bool => auth()->user()->hasRole('Administrador')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->visible(fn (): bool => auth()->user()->hasRole('Administrador')),
                 ]),
             ]);
     }
