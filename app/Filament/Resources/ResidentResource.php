@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\ResidentResource\Pages;
 use App\Filament\Resources\ResidentResource\RelationManagers;
 use App\Models\Resident;
@@ -18,6 +19,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteBulkAction;
 use App\Filament\Resources\ResidentResource\RelationManagers\DiagnosesRelationManager;
 use App\Filament\Resources\ResidentResource\RelationManagers\AppointmentsRelationManager;
 use App\Filament\Resources\ResidentResource\RelationManagers\PrescriptionsRelationManager;
@@ -26,7 +28,7 @@ class ResidentResource extends Resource
 {
     protected static ?string $model = Resident::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?string $modelLabel = 'Residente';
 
@@ -37,6 +39,7 @@ class ResidentResource extends Resource
     protected static ?string $navigationGroup = 'Gestión Hogar';
 
     protected static ?int $navigationSort = 10;
+
 
     public static function form(Form $form): Form
     {
@@ -153,6 +156,7 @@ class ResidentResource extends Resource
             ]);
     }
 
+
     public static function getRelations(): array
     {
         return [
@@ -169,5 +173,33 @@ class ResidentResource extends Resource
             'create' => Pages\CreateResident::route('/create'),
             'edit' => Pages\EditResident::route('/{record}/edit'),
         ];
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('view residents') || auth()->user()->can('manage residents');
+    }
+
+    // Controla quién puede acceder a la página de creación
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('manage residents');
+    }
+
+    // Controla quién puede acceder a la página de edición
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('manage residents');
+    }
+
+    // Controla quién puede borrar 
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->hasRole('Administrador'); 
+    }
+
+    public static function canDeleteAny(): bool // Para la acción selectiva
+    {
+        return auth()->user()->hasRole('Administrador'); 
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\AppointmentResource\Pages;
 use App\Filament\Resources\AppointmentResource\RelationManagers;
 use App\Models\Appointment;
@@ -159,4 +160,22 @@ class AppointmentResource extends Resource
             'edit' => Pages\EditAppointment::route('/{record}/edit'),
         ];
     }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('view residents') || auth()->user()->can('manage residents');
+    }
+
+    // Controla quién puede acceder a la página de creación
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('manage residents');
+    }
+
+    // Controla quién puede acceder a la página de edición
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('manage residents');
+    }
+    
 }

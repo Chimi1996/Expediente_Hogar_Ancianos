@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\DiagnosisResource\Pages;
 use App\Filament\Resources\DiagnosisResource\RelationManagers;
 use App\Filament\Resources\DiagnosisResource\RelationManagers\TreatmentsRelationManager;
@@ -155,5 +156,21 @@ class DiagnosisResource extends Resource
             'create' => Pages\CreateDiagnosis::route('/create'),
             'edit' => Pages\EditDiagnosis::route('/{record}/edit'),
         ];
+    }
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('view residents') || auth()->user()->can('manage residents');
+    }
+
+    // Controla quién puede acceder a la página de creación
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('manage residents');
+    }
+
+    // Controla quién puede acceder a la página de edición
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('manage residents');
     }
 }

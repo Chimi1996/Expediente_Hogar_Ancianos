@@ -14,7 +14,9 @@ class EditResident extends EditRecord
     {
         return [
             // Obtiene el botón "Guardar Cambios" por defecto
-            $this->getSaveFormAction(),
+            $this->getSaveFormAction()
+                 // lo habilitamos solo para el administrador
+                 ->disabled(!auth()->user()->hasRole('Administrador')),
 
             // Obtiene el botón "Cancelar" por defecto y le cambia la etiqueta
             $this->getCancelFormAction()->label('Regresar'),

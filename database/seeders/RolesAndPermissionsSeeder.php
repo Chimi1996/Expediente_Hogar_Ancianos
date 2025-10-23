@@ -19,7 +19,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Crear Permisos
+        // Permisos para Administrar
         Permission::firstOrCreate(['name' => 'manage users']);
         Permission::firstOrCreate(['name' => 'manage residents']); // Un permiso general para CRUD
         Permission::firstOrCreate(['name' => 'manage diagnoses']);
@@ -29,10 +29,20 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'manage prescriptions']);
         Permission::firstOrCreate(['name' => 'manage backups']);
 
+        // Permisos de Solo Lectura
+        Permission::firstOrCreate(['name' => 'view residents']);
+        Permission::firstOrCreate(['name' => 'view diagnoses']);
+        Permission::firstOrCreate(['name' => 'view treatments']);
+        Permission::firstOrCreate(['name' => 'view appointments']);
+        Permission::firstOrCreate(['name' => 'view prescriptions']);
+        Permission::firstOrCreate(['name' => 'view medications']);
+
         // Crear Roles y asignar permisos
+        //Rol Administrador
         $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
         $adminRole->syncPermissions(Permission::all()); // El admin puede hacer todo
 
+        // Rol Enfermero
         $nurseRole = Role::firstOrCreate(['name' => 'Enfermero']);
         $nurseRole->syncPermissions([
             'manage residents',
@@ -41,6 +51,23 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage medications',
             'manage appointments',
             'manage prescriptions',
+            'view residents',
+            'view diagnoses',
+            'view treatments',
+            'view appointments',
+            'view prescriptions',
+            'view medications',
+        ]);
+
+        // Rol Visitante
+        $visitorRole = Role::firstOrCreate(['name' => 'Visitante']);
+        $visitorRole->syncPermissions([
+            'view residents',
+            'view diagnoses',
+            'view treatments',
+            'view appointments',
+            'view prescriptions',
+            'view medications',
         ]);
 
         $adminEmail = 'admin@example.com';

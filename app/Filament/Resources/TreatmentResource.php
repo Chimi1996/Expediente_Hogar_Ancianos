@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\TreatmentResource\Pages;
 use App\Filament\Resources\TreatmentResource\RelationManagers;
 use App\Models\Treatment;
@@ -147,5 +148,22 @@ class TreatmentResource extends Resource
             'create' => Pages\CreateTreatment::route('/create'),
             'edit' => Pages\EditTreatment::route('/{record}/edit'),
         ];
+    }
+    
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->can('view residents') || auth()->user()->can('manage residents');
+    }
+
+    // Controla quién puede acceder a la página de creación
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('manage residents');
+    }
+
+    // Controla quién puede acceder a la página de edición
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('manage residents');
     }
 }
