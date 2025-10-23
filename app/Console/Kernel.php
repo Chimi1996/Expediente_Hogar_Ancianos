@@ -16,6 +16,8 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         $schedule->command(UpdateAppointmentStatuses::class)->daily();
+
+        $schedule->command('backup:run')->daily()->at('01:00'); // Ejecuta el backup todos los días a la 1:00 AM
     }
 
     /**
