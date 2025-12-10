@@ -56,6 +56,7 @@ return [
             'throw' => false,
         ],
 
+        /*
         'google' => [
             'driver' => 'google',
             'clientId' => env('GOOGLE_DRIVE_CLIENT_ID'),
@@ -64,6 +65,24 @@ return [
             'folderId' => env('GOOGLE_DRIVE_FOLDER_ID', null), // null significa la raíz de Drive por defecto
             // Opcional: Configuración de visibilidad, por defecto 'private'
             // 'visibility' => 'private',
+        ],
+        */
+
+        /*
+        'dropbox' => [
+            'driver'              => 'dropbox',
+            'key'                 => env('DROPBOX_APP_KEY'),
+            'secret'              => env('DROPBOX_APP_SECRET'),
+            // 'refresh_token'       => env('DROPBOX_REFRESH_TOKEN'), 
+            'access_token'        => env('DROPBOX_ACCESS_TOKEN'), // Opcional, déjarlo vacío para usar refresh token
+            'app_folder'          => env('DROPBOX_FOLDER', ''), // Subcarpeta opcional
+            'path_prefix'         => env('DROPBOX_PATH_PREFIX', ''), // Usualmente vacío
+        ],
+        */
+        'dropbox'=> [
+            'driver' => 'dropbox',
+            'access_token' => env('DROPBOX_ACCESS_TOKEN'),
+            'path_prefix' => 'backups/' .env('APP_NAME'),
         ],
 
     ],

@@ -119,7 +119,7 @@ class ResidentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('age') // <-- columna virtual
                     ->label('Edad') // Etiqueta personalizada para la columna
-                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('fecha_nacimiento', $direction === 'asc' ? 'desc' : 'asc')),
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('birth_date', $direction === 'asc' ? 'desc' : 'asc')),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Estado')
                     ->searchable(),

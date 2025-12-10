@@ -10,6 +10,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Assets\Css;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -33,6 +34,13 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
                 'gray' => Color::Slate,
             ])
+            /* ->assets([
+                Css::make('filament-custom'),
+            ]) */
+            ->assets([
+                Css::make('filament-custom', '/css/app/filament-custom.css'),
+            ])
+            ->theme('app')
             ->userMenuItems([
                 MenuItem::make()
                     ->label('Perfil') 
@@ -63,5 +71,6 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+            
     }
 }

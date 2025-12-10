@@ -159,6 +159,8 @@ return [
         /*
          * Package Service Providers...
          */
+        //Masbug\Flysystem\GoogleDriveAdapter\Providers\GoogleDriveServiceProvider::class, //No funciona de momento
+        //Spatie\Dropbox\DropboxServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -169,7 +171,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Masbug\Flysystem\GoogleDriveAdapter\Providers\GoogleDriveServiceProvider::class,
+        App\Providers\Filament\AdminPanelProvider::class,
     ])->toArray(),
 
     /*
