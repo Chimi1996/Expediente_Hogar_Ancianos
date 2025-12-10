@@ -28,23 +28,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ELIMINAR ESTA RUTA DESPUÉS DE LA MIGRACIÓN
 Route::get('/run-migrate-and-seed/{key}', function ($key) {
-    // Reemplaza 'TU_CLAVE_SECRETA' con una cadena muy larga y aleatoria
-    if ($key !== 'Chimi-261996') { 
+    if ($key !== 'Chimicr-261996') { // Usa tu clave real
         abort(403, 'Acceso Denegado.');
     }
 
     try {
-        Artisan::call('migrate', ['--force' => true]);
-        // Si tienes seeds para el usuario admin, también puedes ejecutarlo aquí:
-        // Artisan::call('db:seed'); 
+        // 1. Ejecutar las migraciones
+        \Artisan::call('migrate', ['--force' => true]); 
 
-        return '¡Migraciones y Seeds (si aplica) ejecutados con éxito!';
+        // 2. Ejecutar los seeders (¡Esto incluye tu AdminUserSeeder!)
+        \Artisan::call('db:seed', ['--force' => true]); 
+
+        return '¡Migraciones y Seeder de Admin ejecutados con éxito!';
     } catch (\Exception $e) {
-        return 'Error al ejecutar migraciones: ' . $e->getMessage();
+        return 'Error: ' . $e->getMessage();
     }
 });
-// FIN DE LA RUTA TEMPORAL
 
 require __DIR__.'/auth.php';
