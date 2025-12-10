@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
 // ELIMINAR ESTA RUTA DESPUÉS DE LA MIGRACIÓN
 Route::get('/run-migrate-and-seed/{key}', function ($key) {
     // Reemplaza 'TU_CLAVE_SECRETA' con una cadena muy larga y aleatoria
-    if ($key !== 'TU_CLAVE_SECRETA_UNICA') { 
+    if ($key !== 'Chimi-261996') { 
         abort(403, 'Acceso Denegado.');
     }
 
