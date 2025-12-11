@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Panel;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -52,7 +53,7 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasRole('Administrador'); 
     }
 
-    public function canAccessPanel(): bool 
+    public function canAccessPanel(Panel $panel): bool 
     {
         // Usa tu lógica de rol de Spatie
         return $this->hasRole('Administrador'); 
