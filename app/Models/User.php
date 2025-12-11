@@ -51,4 +51,10 @@ class User extends Authenticatable implements FilamentUser
         // Esto le dice a Filament: solo si tiene el rol 'Administrador', puede acceder.
         return $this->hasRole('Administrador'); 
     }
+
+    public function canAccessPanel(): bool 
+    {
+        // Usa tu lógica de rol de Spatie
+        return $this->hasRole('Administrador'); 
+    }
 }
