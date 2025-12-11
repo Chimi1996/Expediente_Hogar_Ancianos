@@ -25,5 +25,10 @@ class AppServiceProvider extends ServiceProvider
         if (env('APP_ENV') !== 'local') { // Solo forzar en Heroku/producción
             URL::forceScheme('https');
         }
+
+        Gate::define('access-filament', function ($user) {
+            // Permite el acceso a cualquier usuario con el rol 'Administrador'
+            return $user->hasRole('Administrador'); 
+        });
     }
 }
