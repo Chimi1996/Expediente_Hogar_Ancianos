@@ -43,4 +43,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function canAccessFilament(): bool
+    {
+        // El mismo chequeo que usamos en el Gate, pero ahora en el modelo.
+        // Esto le dice a Filament: solo si tiene el rol 'Administrador', puede acceder.
+        return $this->hasRole('Administrador'); 
+    }
 }
