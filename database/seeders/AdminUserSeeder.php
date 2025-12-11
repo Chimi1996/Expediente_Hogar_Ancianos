@@ -16,6 +16,7 @@ class AdminUserSeeder extends Seeder
     {
         // 1. Asegurar que el rol 'Administrador' exista o crearlo (Spatie Permissions)
         $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
+        
 
         // 2. Crear o encontrar el usuario administrador
         $user = User::firstOrCreate(
