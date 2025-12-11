@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,9 +28,10 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        Gate::define('access-filament', function ($user) {
-            // Permite el acceso a cualquier usuario con el rol 'Administrador'
-            return $user->hasRole('Administrador'); 
+        Gate::define('access-filament', function (?User $user) {
+            // Permite el acceso a cualquier usuario con el rol 'Administrador'.
+            // El chequeo ahora es seguro ante usuarios nulos (visitantes/guests).
+            return $user && $user->hasRole('Administrador');
         });
     }
 }
