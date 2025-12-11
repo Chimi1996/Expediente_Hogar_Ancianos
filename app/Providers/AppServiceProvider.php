@@ -21,5 +21,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+        if (env('APP_ENV') !== 'local') { // Solo forzar en Heroku/producción
+            URL::forceScheme('https');
+        }
     }
 }
