@@ -28,22 +28,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/run-migrate-and-seed/{key}', function ($key) {
-    if ($key !== 'Chimicr-261996') { // Usa tu clave real
-        abort(403, 'Acceso Denegado.');
-    }
-
-    try {
-        // 1. Ejecutar las migraciones
-        \Artisan::call('migrate', ['--force' => true]); 
-
-        // 2. Ejecutar los seeders (¡Esto incluye tu AdminUserSeeder!)
-        \Artisan::call('db:seed', ['--force' => true]); 
-
-        return '¡Migraciones y Seeder de Admin ejecutados con éxito!';
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-});
-
 require __DIR__.'/auth.php';
