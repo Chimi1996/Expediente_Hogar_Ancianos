@@ -72,7 +72,8 @@ class TreatmentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                ->label('Crear Tratamiento'),
+                    ->label('Crear Tratamiento')
+                    ->modalHeading('Crear Tratamiento'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

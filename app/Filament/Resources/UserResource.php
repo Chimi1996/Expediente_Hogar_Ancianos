@@ -51,8 +51,7 @@ class UserResource extends Resource
                     ->required(fn (string $context): bool => $context === 'create')
                     // Oculta el campo al editar si no se quiere cambiar la contraseña
                     ->visible(fn (string $context): bool => $context === 'create')
-                    // Hashea la contraseña antes de guardarla
-                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                    // Deja que el cast del modelo (`password => 'hashed'`) haga el hash
                     // No rellenes el campo al editar
                     ->dehydrated(fn ($state) => filled($state))
                     ->maxLength(255),

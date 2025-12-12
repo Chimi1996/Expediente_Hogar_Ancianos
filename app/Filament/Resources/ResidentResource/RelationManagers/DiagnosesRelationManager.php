@@ -74,7 +74,8 @@ class DiagnosesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                ->label('Crear Diagnóstico'),
+                    ->label('Crear Diagnóstico')
+                    ->modalHeading('Crear Diagnóstico'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

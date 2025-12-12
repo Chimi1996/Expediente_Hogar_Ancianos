@@ -48,14 +48,18 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessFilament(): bool
     {
-        // El mismo chequeo que usamos en el Gate, pero ahora en el modelo.
-        // Esto le dice a Filament: solo si tiene el rol 'Administrador', puede acceder.
-        return $this->hasRole('Administrador'); 
+        // Permite el acceso a Filament si el usuario tiene cualquiera de los
+        // roles que consideramos administrativos o de acceso al panel.
+        // Mantiene además la posibilidad de usar permisos específicos si se desea.
+        return $this->hasAnyRole(['Administrador', 'Enfermero', 'Visitante'])
+            || $this->hasPermissionTo('access-filament');
     }
 
     public function canAccessPanel(Panel $panel): bool 
     {
-        // Usa tu lógica de rol de Spatie
-        return $this->hasRole('Administrador'); 
+        // Permite el acceso si tiene cualquiera de los roles permitidos
+        // o si se le asignó explícitamente el permiso `access-filament`.
+        return $this->hasAnyRole(['Administrador', 'Enfermero', 'Visitante'])
+            || $this->hasPermissionTo('access-filament');
     }
 }

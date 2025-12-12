@@ -89,7 +89,8 @@ class PrescriptionsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                ->label('Añadir Prescripción'),
+                    ->label('Añadir Prescripción')
+                    ->modalHeading('Añadir Prescripción'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

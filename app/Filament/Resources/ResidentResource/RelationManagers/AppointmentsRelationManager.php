@@ -86,7 +86,8 @@ class AppointmentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                ->label('Crear Cita'),
+                    ->label('Crear Cita')
+                    ->modalHeading('Crear Cita'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

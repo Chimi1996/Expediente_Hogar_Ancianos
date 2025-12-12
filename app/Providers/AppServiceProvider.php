@@ -29,9 +29,12 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Gate::define('access-filament', function (?User $user) {
-            // Permite el acceso a cualquier usuario con el rol 'Administrador'.
-            // El chequeo ahora es seguro ante usuarios nulos (visitantes/guests).
-            return $user && $user->hasRole('Administrador');
+            // Permite el acceso a usuarios con cualquiera de estos roles
+            // o a usuarios con el permiso `access-filament`.
+            return $user && (
+                $user->hasAnyRole(['Administrador', 'Enfermero', 'Visitante'])
+                || $user->hasPermissionTo('access-filament')
+            );
         });
     }
 }
